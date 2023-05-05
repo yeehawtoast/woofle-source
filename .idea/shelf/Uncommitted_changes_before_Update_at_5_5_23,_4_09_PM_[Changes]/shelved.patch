@@ -1,0 +1,176 @@
+Index: src/com/source/tool/GenerateAst.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/com/source/tool/GenerateAst.java b/src/com/source/tool/GenerateAst.java
+new file mode 100644
+--- /dev/null	(date 1682368313590)
++++ b/src/com/source/tool/GenerateAst.java	(date 1682368313590)
+@@ -0,0 +1,67 @@
++package com.source.tool;
++
++import java.io.IOException;
++import java.io.PrintWriter;
++import java.util.Arrays;
++import java.util.List;
++
++public class GenerateAst {
++    public static void main(String[] args) throws IOException {
++        if (args.length != 1) {
++            System.err.println("Usage: generate_ast <output directory>");
++            System.exit(64);
++        }
++        String outputDir = args[0];
++        defineAst(outputDir, "Expr", Arrays.asList(
++                "Binary   : Expr left, Token operator, Expr right",
++                "Grouping : Expr expression",
++                "Literal  : Object value",
++                "Unary    : Token operator, Expr right"
++        ));
++    }
++    private static void defineAst(
++            String outputDir, String baseName, List<String> types)
++            throws IOException {
++        String path = outputDir + "/" + baseName + ".java";
++        PrintWriter writer = new PrintWriter(path, "UTF-8");
++
++        writer.println("package com.source.woofl;");
++        writer.println();
++        writer.println("import java.util.List;");
++        writer.println();
++        writer.println("abstract class " + baseName + " {");
++        for (String type : types) {
++            String className = type.split(":")[0].trim();
++            String fields = type.split(":")[1].trim();
++            defineType(writer, baseName, className, fields);
++        }
++        writer.println("}");
++        writer.close();
++    }
++    private static void defineType(
++            PrintWriter writer, String baseName,
++            String className, String fieldList) {
++        writer.println("  static class " + className + " extends " +
++                baseName + " {");
++
++        // Constructor.
++        writer.println("    " + className + "(" + fieldList + ") {");
++
++        // Store parameters in fields.
++        String[] fields = fieldList.split(", ");
++        for (String field : fields) {
++            String name = field.split(" ")[1];
++            writer.println("      this." + name + " = " + name + ";");
++        }
++
++        writer.println("    }");
++
++        // Fields.
++        writer.println();
++        for (String field : fields) {
++            writer.println("    final " + field + ";");
++        }
++
++        writer.println("  }");
++    }
++}
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"8a220276-6a4a-4366-b88f-419203c88433\" name=\"Changes\" comment=\"\">\n      <change afterPath=\"$PROJECT_DIR$/.gitignore\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/aws.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/misc.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/modules.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/uiDesigner.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/vcs.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/com/source/woofl/Scanner.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/com/source/woofl/Token.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/com/source/woofl/TokenType.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/src/com/source/woofl/Woofl.java\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/woofl-source.iml\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Enum\" />\n        <option value=\"Class\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"MarkdownSettingsMigration\">\n    <option name=\"stateVersion\" value=\"1\" />\n  </component>\n  <component name=\"ProjectId\" id=\"2ONn2uAFxx3oAYbbDCPeUEMdYAN\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\"><![CDATA[{\n  \"keyToString\": {\n    \"RunOnceActivity.OpenProjectViewOnStart\": \"true\",\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\n    \"SHARE_PROJECT_CONFIGURATION_FILES\": \"true\",\n    \"settings.editor.selected.configurable\": \"preferences.pluginManager\"\n  }\n}]]></component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"8a220276-6a4a-4366-b88f-419203c88433\" name=\"Changes\" comment=\"\" />\n      <created>1681409704789</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1681409704789</updated>\n    </task>\n    <servers />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision b2f226e5d96e2949a3cf38b091885b5a5d071c0b)
++++ b/.idea/workspace.xml	(date 1683306791788)
+@@ -1,19 +1,9 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="ChangeListManager">
+-    <list default="true" id="8a220276-6a4a-4366-b88f-419203c88433" name="Changes" comment="">
+-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/aws.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/com/source/woofl/Scanner.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/com/source/woofl/Token.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/com/source/woofl/TokenType.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/com/source/woofl/Woofl.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/woofl-source.iml" afterDir="false" />
++    <list default="true" id="8a220276-6a4a-4366-b88f-419203c88433" name="Changes" comment="Added Scanner, Token, Types">
++      <change afterPath="$PROJECT_DIR$/src/com/source/tool/GenerateAst.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -29,6 +19,12 @@
+     </option>
+   </component>
+   <component name="Git.Settings">
++    <option name="PUSH_TAGS">
++      <GitPushTagMode>
++        <option name="argument" value="--tags" />
++        <option name="title" value="All" />
++      </GitPushTagMode>
++    </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+   </component>
+   <component name="MarkdownSettingsMigration">
+@@ -40,14 +36,14 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent"><![CDATA[{
+-  "keyToString": {
+-    "RunOnceActivity.OpenProjectViewOnStart": "true",
+-    "RunOnceActivity.ShowReadmeOnStart": "true",
+-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+-    "settings.editor.selected.configurable": "preferences.pluginManager"
++  <component name="PropertiesComponent">{
++  &quot;keyToString&quot;: {
++    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
++    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
++    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+   }
+-}]]></component>
++}</component>
+   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+   <component name="TaskManager">
+     <task active="true" id="Default" summary="Default task">
+@@ -57,6 +53,14 @@
+       <option name="presentableId" value="Default" />
+       <updated>1681409704789</updated>
+     </task>
++    <task id="LOCAL-00001" summary="Added Scanner, Token, Types">
++      <created>1681502925999</created>
++      <option name="number" value="00001" />
++      <option name="presentableId" value="LOCAL-00001" />
++      <option name="project" value="LOCAL" />
++      <updated>1681502926000</updated>
++    </task>
++    <option name="localTasksCounter" value="2" />
+     <servers />
+   </component>
+   <component name="Vcs.Log.Tabs.Properties">
+@@ -70,4 +74,13 @@
+       </map>
+     </option>
+   </component>
++  <component name="VcsManagerConfiguration">
++    <MESSAGE value="Added Scanner, Token, Types" />
++    <option name="LAST_COMMIT_MESSAGE" value="Added Scanner, Token, Types" />
++  </component>
++  <component name="com.intellij.coverage.CoverageDataManagerImpl">
++    <SUITE FILE_PATH="coverage/woofl_source$GenerateAst.ic" NAME="GenerateAst Coverage Results" MODIFIED="1683306677434" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
++      <FILTER>com.source.tool.*</FILTER>
++    </SUITE>
++  </component>
+ </project>
+\ No newline at end of file
